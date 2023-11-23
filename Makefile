@@ -24,13 +24,13 @@ SERVER_OBJS		+= $(patsubst $(UTILS_DIR)/%.c,$(OBJS_DIR)/%.o,$(UTILS_SRCS))
 CLIENT_OBJS		= $(patsubst $(SRCS_DIR)/%.c,$(OBJS_DIR)/%.o,$(CLIENT_SRCS))
 CLIENT_OBJS		+= $(patsubst $(UTILS_DIR)/%.c,$(OBJS_DIR)/%.o,$(UTILS_SRCS))
 
-$(SERVER): $(SERVER_OBJS) $(INCLUDES)/server.h $(INCLUDES)/libftprintf.h $(INCLUDES)/libft.h
+all: $(SERVER) $(CLIENT)
+
+$(SERVER): $(SERVER_OBJS) $(INCLUDES)/minitalk.h $(INCLUDES)/libftprintf.h $(INCLUDES)/libft.h
 	$(CC) $(CFLAGS) $(SERVER_OBJS) -o $(SERVER) -L$(LIBS_DIR) $(LIBFTPRINTF) -I$(INCLUDES)
 	
-$(CLIENT): $(CLIENT_OBJS) $(INCLUDES)/client.h $(INCLUDES)/libftprintf.h $(INCLUDES)/libft.h
+$(CLIENT): $(CLIENT_OBJS) $(INCLUDES)/minitalk.h $(INCLUDES)/libftprintf.h $(INCLUDES)/libft.h
 	$(CC) $(CFLAGS) $(CLIENT_OBJS) -o $(CLIENT) -L$(LIBS_DIR) $(LIBFTPRINTF) -I$(INCLUDES)
-
-all: $(SERVER) $(CLIENT)
 
 $(OBJS_DIR)/%.o: $(SRCS_DIR)/%.c | $(OBJS_DIR)
 	$(CC) $(CFLAGS) -I$(INCLUDES) -c $< -o $@
