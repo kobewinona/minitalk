@@ -1,0 +1,9 @@
+# vs code
+.vscode
+
+# program
+a.out
+
+# rest
+.DS_store
+*.txt
