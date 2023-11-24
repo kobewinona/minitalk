@@ -12,15 +12,7 @@
 
 #include "../includes/minitalk.h"
 
-static void	send_bit(int pid, char bit)
-{
-	if (bit == '0')
-		kill(pid, SIGUSR1);
-	else
-		kill(pid, SIGUSR2);
-}
-
-static void	handle_message(int pid, char *message)
+static void	send_message(int pid, char *message)
 {
 	char	c;
 	char	bit;
@@ -28,6 +20,7 @@ static void	handle_message(int pid, char *message)
 	int		k;
 
 	i = 0;
+	bit = 0;
 	while (message[i] != '\0')
 	{
 		c = message[i];
@@ -35,11 +28,10 @@ static void	handle_message(int pid, char *message)
 		while (k >= 0)
 		{
 			if ((c >> k) & 1)
-				bit = '1';
+				kill(pid, SIGUSR2);
 			else
-				bit = '0';
-			send_bit(pid, bit);
-			usleep(100);
+				kill(pid, SIGUSR1);
+			usleep(500);
 			k--;
 		}
 		i++;
@@ -64,6 +56,6 @@ int	main(int argc, char **argv)
 	}
 	message = argv[2];
 	ft_printf("client says:\n\n%s ⸜(ˆᗜˆ˵ )⸝\n\n\n", message);
-	handle_message(pid, message);
+	send_message(pid, message);
 	return (0);
 }

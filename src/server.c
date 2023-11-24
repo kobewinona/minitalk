@@ -12,22 +12,21 @@
 
 #include "../includes/minitalk.h"
 
-char	g_char = 0;
-int		g_bit = 0;
-
-static void	signal_handler(int signum)
+static void	handle_signal(int signum)
 {
-	g_char |= (signum == SIGUSR1);
-	g_bit++;
+	static char	c;
+	static int	bit;
 
-	if (g_bit == 8)
+	c = c | (signum == SIGUSR2);
+	bit++;
+	if (bit == 8)
 	{
-		write(1, &g_char, 1);
-		g_bit = 0;
-		g_char = 0;
+		write(1, &c, 1);
+		bit = 0;
+		c = 0;
 	}
 	else
-		g_char <<= 1;
+		c <<= 1;
 }
 
 int	main(void)
@@ -35,9 +34,9 @@ int	main(void)
 	int	pid;
 
 	pid = getpid();
-	ft_printf("˖⁺｡˚⋆˙₊˚✧  ੈ‧₊˚*‧.₊˚\n\nPID: %d | ( ᵔ ᵕ ᵔ)\n\n", pid);
-	signal(SIGUSR1, signal_handler);
-	signal(SIGUSR2, signal_handler);
+	ft_printf("˖⁺｡˚⋆˙₊˚✧  ੈ‧₊˚*‧.₊˚\n\nPID: %d | ( ᵔ ᵕ ᵔ) ", pid);
+	signal(SIGUSR1, handle_signal);
+	signal(SIGUSR2, handle_signal);
 	while (1)
 		pause();
 	return (0);
