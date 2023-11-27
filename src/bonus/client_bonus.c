@@ -5,12 +5,43 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: dklimkin <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/11/27 15:11:30 by dklimkin          #+#    #+#             */
-/*   Updated: 2023/11/27 15:11:31 by dklimkin         ###   ########.fr       */
+/*   Created: 2023/11/27 15:11:40 by dklimkin          #+#    #+#             */
+/*   Updated: 2023/11/27 15:11:41 by dklimkin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../includes/minitalk.h"
+#include "../../includes/minitalk.h"
+
+static int	g_is_signal_acknowledged;
+
+static void	handle_signal_acknowledgement(int signum)
+{
+	if (signum == SIGUSR1)
+		g_is_signal_acknowledged = TRUE;
+}
+
+static void	send_bit(int server_pid, int bit)
+{
+	int	tries;
+
+	tries = 0;
+	while (tries < 100)
+	{
+		if (bit == '1')
+			kill(server_pid, SIGUSR2);
+		if (bit == '0')
+			kill(server_pid, SIGUSR1);
+		usleep(300);
+		if (g_is_signal_acknowledged)
+		{
+			g_is_signal_acknowledged = FALSE;
+			return ;
+		}
+		tries++;
+	}
+	ft_printf("message transmission failed ｡°(.◜ᯅ◝)°｡\n\n\n");
+	exit(1);
+}
 
 static void	send_message(int server_pid, char *message)
 {
@@ -28,21 +59,23 @@ static void	send_message(int server_pid, char *message)
 		while (k >= 0)
 		{
 			if ((c >> k) & 1)
-				kill(server_pid, SIGUSR2);
+				send_bit(server_pid, '1');
 			else
-				kill(server_pid, SIGUSR1);
-			usleep(500);
+				send_bit(server_pid, '0');
 			k--;
 		}
 		i++;
 	}
+	ft_printf("%s ⸜(ˆᗜ ˆ˵)⸝\n\n\n", message);
 }
 
 int	main(int argc, char **argv)
 {
+	struct sigaction	sa;
 	char				*message;
 	int					server_pid;
 
+	ft_printf("BONUS\n\n");
 	if (argc != 3)
 	{
 		ft_printf("please provide PID and a string\n");
@@ -55,7 +88,9 @@ int	main(int argc, char **argv)
 		exit (1);
 	}
 	message = argv[2];
-	ft_printf("client %d says:\n\n%s ⸜(ˆᗜˆ˵ )⸝\n\n\n", getpid(), message);
+	sa.sa_flags = SA_SIGINFO;
+	sa.sa_handler = handle_signal_acknowledgement;
+	sigaction(SIGUSR1, &sa, NULL);
 	send_message(server_pid, message);
 	return (0);
 }

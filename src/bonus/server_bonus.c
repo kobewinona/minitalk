@@ -5,19 +5,20 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: dklimkin <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/11/23 15:21:42 by dklimkin          #+#    #+#             */
-/*   Updated: 2023/11/23 15:21:43 by dklimkin         ###   ########.fr       */
+/*   Created: 2023/11/27 15:11:22 by dklimkin          #+#    #+#             */
+/*   Updated: 2023/11/27 15:11:23 by dklimkin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../includes/minitalk.h"
+#include "../../includes/minitalk.h"
 
-static void	handle_signal_message(int signum)
+static void	handle_signal_message(int signo, siginfo_t *info, void *context)
 {
 	static char	c;
 	static int	bits;
 
-	c = c | (signum == SIGUSR2);
+	(void)context;
+	c = c | (signo == SIGUSR2);
 	bits++;
 	if (bits == 8)
 	{
@@ -27,6 +28,7 @@ static void	handle_signal_message(int signum)
 	}
 	else
 		c <<= 1;
+	kill(info->si_pid, SIGUSR1);
 }
 
 int	main(void)
@@ -34,12 +36,13 @@ int	main(void)
 	struct sigaction	sa;
 	int					server_pid;
 
+	ft_printf("BONUS\n\n");
 	server_pid = getpid();
-	sa.sa_flags = 0;
-	sa.sa_handler = handle_signal_message;
+	sa.sa_flags = SA_SIGINFO;
+	sa.sa_sigaction = handle_signal_message;
 	sigemptyset(&sa.sa_mask);
 	ft_printf("˖⁺｡˚⋆˙₊˚✧  ੈ‧₊˚*‧.₊˚˖⁺｡˚⋆˙₊˚\n\n");
-	ft_printf("Server PID: %d | ( ᵔ ᵕ ᵔ) ", server_pid);
+	ft_printf("Server PID: %d | (づ๑•ᴗ•๑)づ♡\n\n", server_pid);
 	if (sigaction(SIGUSR1, &sa, NULL) == ERROR)
 	{
 		ft_putstr_fd(SIGHANDLER_ERROR_MSG, STDERR_FILENO);

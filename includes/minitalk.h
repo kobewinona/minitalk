@@ -20,4 +20,7 @@
 # define FALSE 0
 # define ERROR -1
 
+// error messages
+# define SIGHANDLER_ERROR_MSG "Error setting signal handler"
+
 #endif
