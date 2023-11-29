@@ -14,6 +14,12 @@
 
 static int	g_is_signal_acknowledged;
 
+static void	handle_error(char *error_message)
+{
+	ft_putstr_fd(error_message, STDERR_FILENO);
+	exit(EXIT_FAILURE);
+}
+
 static void	handle_signal_acknowledgement(int signum)
 {
 	if (signum == SIGUSR1)
@@ -25,12 +31,18 @@ static void	send_bit(int server_pid, int bit)
 	int	tries;
 
 	tries = 0;
-	while (tries < 500)
+	while (tries++ < 500)
 	{
 		if (bit == '1')
-			kill(server_pid, SIGUSR2);
+		{
+			if (kill(server_pid, SIGUSR2) == ERROR)
+				handle_error(TRANSMISSON_ERR);
+		}
 		if (bit == '0')
-			kill(server_pid, SIGUSR1);
+		{
+			if (kill(server_pid, SIGUSR1) == ERROR)
+				handle_error(TRANSMISSON_ERR);
+		}
 		usleep(300);
 		if (g_is_signal_acknowledged)
 		{
@@ -38,10 +50,8 @@ static void	send_bit(int server_pid, int bit)
 			return ;
 		}
 		usleep(2000);
-		tries++;
 	}
-	ft_putstr_fd(TRANSMISSON_ERR, STDERR_FILENO);
-	exit(1);
+	handle_error(TRANSMISSON_ERR);
 }
 
 static void	send_message(int server_pid, char *message)
@@ -69,30 +79,29 @@ static void	send_message(int server_pid, char *message)
 	}
 	ft_putstr_fd(message, STDOUT_FILENO);
 	ft_putstr_fd("  ⸜(ˆᗜ ˆ˵)⸝\n\n\n", STDOUT_FILENO);
+	exit(EXIT_SUCCESS);
 }
 
 int	main(int argc, char **argv)
 {
 	struct sigaction	sa;
-	char				*message;
 	int					server_pid;
 
 	if (argc != 3)
-	{
-		ft_putstr_fd(ARGS_NOT_PROVIDED_ERR, STDERR_FILENO);
-		exit(1);
-	}
+		handle_error(ARGS_NOT_PROVIDED_ERR);
 	server_pid = ft_atoi(argv[1]);
 	if (!server_pid)
-	{
-		ft_putstr_fd(INCORRECT_PID_ERR, STDERR_FILENO);
-		exit (1);
-	}
-	message = argv[2];
-	sa.sa_flags = SA_SIGINFO;
+		handle_error(INCORRECT_PID_ERR);
+	if (sigaction(SIGUSR1, &sa, NULL) == ERROR)
+		handle_error(SIGHANDLER_ERR);
+	if (sigaction(SIGUSR2, &sa, NULL) == ERROR)
+		handle_error(SIGHANDLER_ERR);
+	sa.sa_flags = SA_RESTART;
 	sa.sa_handler = handle_signal_acknowledgement;
 	sigemptyset(&sa.sa_mask);
 	sigaction(SIGUSR1, &sa, NULL);
-	send_message(server_pid, message);
+	send_message(server_pid, argv[2]);
+	while (1)
+		pause();
 	return (0);
 }

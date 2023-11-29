@@ -12,6 +12,12 @@
 
 #include "../includes/minitalk.h"
 
+static void	handle_error(char *error_message)
+{
+	ft_putstr_fd(error_message, STDERR_FILENO);
+	exit(EXIT_FAILURE);
+}
+
 static void	handle_signal_message(int signum)
 {
 	static char	c;
@@ -35,21 +41,14 @@ int	main(void)
 	int					server_pid;
 
 	server_pid = getpid();
-	sa.sa_flags = 0;
+	sa.sa_flags = SA_RESTART;
 	sa.sa_handler = handle_signal_message;
 	sigemptyset(&sa.sa_mask);
-	ft_printf("˖⁺｡˚⋆˙₊˚✧  ੈ‧₊˚*‧.₊˚˖⁺｡˚⋆˙₊˚\n\n");
 	ft_printf("Server PID: %d | ( ᵔ ᵕ ᵔ) ", server_pid);
 	if (sigaction(SIGUSR1, &sa, NULL) == ERROR)
-	{
-		ft_putstr_fd(SIGHANDLER_ERR, STDERR_FILENO);
-		return (1);
-	}
+		handle_error(SIGHANDLER_ERR);
 	if (sigaction(SIGUSR2, &sa, NULL) == ERROR)
-	{
-		ft_putstr_fd(SIGHANDLER_ERR, STDERR_FILENO);
-		return (1);
-	}
+		handle_error(SIGHANDLER_ERR);
 	sigaction(SIGUSR1, &sa, NULL);
 	sigaction(SIGUSR2, &sa, NULL);
 	while (1)

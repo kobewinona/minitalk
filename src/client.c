@@ -12,6 +12,18 @@
 
 #include "../includes/minitalk.h"
 
+static void	handle_error(char *error_message)
+{
+	ft_putstr_fd(error_message, STDERR_FILENO);
+	exit(EXIT_FAILURE);
+}
+
+static void	send_bit(int server_pid, int signum)
+{
+	if (kill(server_pid, signum) == ERROR)
+		handle_error(TRANSMISSON_ERR);
+}
+
 static void	send_message(int server_pid, char *message)
 {
 	char	c;
@@ -28,9 +40,9 @@ static void	send_message(int server_pid, char *message)
 		while (k >= 0)
 		{
 			if ((c >> k) & 1)
-				kill(server_pid, SIGUSR2);
+				send_bit(server_pid, SIGUSR2);
 			else
-				kill(server_pid, SIGUSR1);
+				send_bit(server_pid, SIGUSR1);
 			usleep(500);
 			k--;
 		}
@@ -38,25 +50,20 @@ static void	send_message(int server_pid, char *message)
 	}
 	ft_putstr_fd(message, STDOUT_FILENO);
 	ft_putstr_fd("  ⸜(ˆᗜ ˆ˵)⸝\n\n\n", STDOUT_FILENO);
+	exit(EXIT_SUCCESS);
 }
 
 int	main(int argc, char **argv)
 {
-	char				*message;
-	int					server_pid;
+	int	server_pid;
 
 	if (argc != 3)
-	{
-		ft_putstr_fd(ARGS_NOT_PROVIDED_ERR, STDERR_FILENO);
-		exit(1);
-	}
+		handle_error(ARGS_NOT_PROVIDED_ERR);
 	server_pid = ft_atoi(argv[1]);
 	if (!server_pid)
-	{
-		ft_putstr_fd(INCORRECT_PID_ERR, STDERR_FILENO);
-		exit (1);
-	}
-	message = argv[2];
-	send_message(server_pid, message);
+		handle_error(INCORRECT_PID_ERR);
+	send_message(server_pid, argv[2]);
+	while (1)
+		pause();
 	return (0);
 }
