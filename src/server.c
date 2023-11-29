@@ -42,12 +42,12 @@ int	main(void)
 	ft_printf("Server PID: %d | ( ᵔ ᵕ ᵔ) ", server_pid);
 	if (sigaction(SIGUSR1, &sa, NULL) == ERROR)
 	{
-		ft_putstr_fd(SIGHANDLER_ERROR_MSG, STDERR_FILENO);
+		ft_putstr_fd(SIGHANDLER_ERR, STDERR_FILENO);
 		return (1);
 	}
 	if (sigaction(SIGUSR2, &sa, NULL) == ERROR)
 	{
-		ft_putstr_fd(SIGHANDLER_ERROR_MSG, STDERR_FILENO);
+		ft_putstr_fd(SIGHANDLER_ERR, STDERR_FILENO);
 		return (1);
 	}
 	sigaction(SIGUSR1, &sa, NULL);

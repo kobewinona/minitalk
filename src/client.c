@@ -36,6 +36,8 @@ static void	send_message(int server_pid, char *message)
 		}
 		i++;
 	}
+	ft_putstr_fd(message, STDOUT_FILENO);
+	ft_putstr_fd("  ⸜(ˆᗜ ˆ˵)⸝\n\n\n", STDOUT_FILENO);
 }
 
 int	main(int argc, char **argv)
@@ -45,17 +47,16 @@ int	main(int argc, char **argv)
 
 	if (argc != 3)
 	{
-		ft_printf("please provide PID and a string\n");
+		ft_putstr_fd(ARGS_NOT_PROVIDED_ERR, STDERR_FILENO);
 		exit(1);
 	}
 	server_pid = ft_atoi(argv[1]);
 	if (!server_pid)
 	{
-		ft_printf("please provide correct server PID\n");
+		ft_putstr_fd(INCORRECT_PID_ERR, STDERR_FILENO);
 		exit (1);
 	}
 	message = argv[2];
-	ft_printf("client %d says:\n\n%s ⸜(ˆᗜˆ˵ )⸝\n\n\n", getpid(), message);
 	send_message(server_pid, message);
 	return (0);
 }

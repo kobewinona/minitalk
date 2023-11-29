@@ -25,7 +25,7 @@ static void	send_bit(int server_pid, int bit)
 	int	tries;
 
 	tries = 0;
-	while (tries < 100)
+	while (tries < 500)
 	{
 		if (bit == '1')
 			kill(server_pid, SIGUSR2);
@@ -37,9 +37,10 @@ static void	send_bit(int server_pid, int bit)
 			g_is_signal_acknowledged = FALSE;
 			return ;
 		}
+		usleep(2000);
 		tries++;
 	}
-	ft_printf("message transmission failed ｡°(.◜ᯅ◝)°｡\n\n\n");
+	ft_putstr_fd(TRANSMISSON_ERR, STDERR_FILENO);
 	exit(1);
 }
 
@@ -66,7 +67,8 @@ static void	send_message(int server_pid, char *message)
 		}
 		i++;
 	}
-	ft_printf("%s ⸜(ˆᗜ ˆ˵)⸝\n\n\n", message);
+	ft_putstr_fd(message, STDOUT_FILENO);
+	ft_putstr_fd("  ⸜(ˆᗜ ˆ˵)⸝\n\n\n", STDOUT_FILENO);
 }
 
 int	main(int argc, char **argv)
@@ -75,21 +77,21 @@ int	main(int argc, char **argv)
 	char				*message;
 	int					server_pid;
 
-	ft_printf("BONUS\n\n");
 	if (argc != 3)
 	{
-		ft_printf("please provide PID and a string\n");
+		ft_putstr_fd(ARGS_NOT_PROVIDED_ERR, STDERR_FILENO);
 		exit(1);
 	}
 	server_pid = ft_atoi(argv[1]);
 	if (!server_pid)
 	{
-		ft_printf("please provide correct server PID\n");
+		ft_putstr_fd(INCORRECT_PID_ERR, STDERR_FILENO);
 		exit (1);
 	}
 	message = argv[2];
 	sa.sa_flags = SA_SIGINFO;
 	sa.sa_handler = handle_signal_acknowledgement;
+	sigemptyset(&sa.sa_mask);
 	sigaction(SIGUSR1, &sa, NULL);
 	send_message(server_pid, message);
 	return (0);
