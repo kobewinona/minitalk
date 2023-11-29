@@ -13,7 +13,10 @@
 #ifndef MINITALK_H
 # define MINITALK_H
 # include "libftprintf.h"
+# include <stddef.h>
 # include <signal.h>
+
+# define NULL ((void *)0)
 
 // magic numbers
 # define TRUE 1

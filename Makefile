@@ -56,7 +56,7 @@ clean:
 	$(RM) $(OBJS_DIR)
 
 fclean: clean
-	$(RM) $(SERVER) $(CLIENT)
+	$(RM) $(SERVER) $(CLIENT) $(SERVER_BONUS) $(CLIENT_BONUS)
 
 re: fclean all
 
