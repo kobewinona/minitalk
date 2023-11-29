@@ -21,10 +21,10 @@
 # define ERROR -1
 
 // error messages
-# define ARGS_NOT_PROVIDED_ERR "please provide PID and a string\n"
-# define INCORRECT_PID_ERR "please provide correct server PID\n"
-# define SIGHANDLER_ERR "Error setting signal handler"
+# define ARGS_NOT_PROVIDED_ERR "\nplease provide PID and a string\n\n"
+# define INCORRECT_PID_ERR "\nplease provide correct server PID\n\n"
+# define SIGHANDLER_ERR "\n\nerror setting signal handler\n\n\n"
 # define TRANSMISSON_ERR "\n\nmessage transmission failed ｡°(.◜ᯅ◝)°｡\n\n\n"
-# define UNKNOWN_SERVER_ERR "an unknown error occured"
+# define UNKNOWN_SERVER_ERR "\n\nan unknown error occured\n\n\n"
 
 #endif
