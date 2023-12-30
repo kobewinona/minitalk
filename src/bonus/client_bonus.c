@@ -12,6 +12,8 @@
 
 #include "../../includes/minitalk.h"
 
+// TODO fix header
+
 static int	g_is_char_received;
 
 static void	handle_error(char *error_message)
@@ -50,27 +52,24 @@ static void	send_character(int server_pid, char c, int delay)
 
 static void	send_message(int server_pid, char *message)
 {
-	int		i;
-    int     tries;
-    int     delay;
+    int	tries;
+    int	delay;
 
-	i = 0;
     tries = 0;
     delay = 40;
-	while (message[i] != '\0')
+	while (*message != '\0')
 	{
-		send_character(server_pid, message[i], delay);
+		send_character(server_pid, *message, delay);
         usleep(delay);
         if (g_is_char_received == TRUE)
         {
             g_is_char_received = FALSE;
-            i++;
+            message++;
         }
         else
         {
-            tries++;
             delay += 10;
-            if (tries >= 50)
+            if (tries++ >= 50)
                 handle_error(TRANSMISSON_ERR);
         }
 	}

@@ -1,8 +1,17 @@
-# vs code
+# IDE
 .vscode
+.idea
+so_long.dSYM
 
 # program
 a.out
+server
+server_bonus
+client
+client_bonus
+
+#objects
+obj
 
 # rest
 .DS_store

@@ -12,6 +12,8 @@
 
 #include "../../includes/minitalk.h"
 
+// TODO fix header
+
 static void	handle_error(char *error_message)
 {
 	ft_putstr_fd(error_message, STDERR_FILENO);
