@@ -12,7 +12,7 @@
 
 #include "../../includes/minitalk.h"
 
-static int	g_is_signal_acknowledged;
+static int	g_is_char_received;
 
 static void	handle_error(char *error_message)
 {
@@ -23,59 +23,56 @@ static void	handle_error(char *error_message)
 static void	handle_signal_acknowledgement(int signum)
 {
 	if (signum == SIGUSR1)
-		g_is_signal_acknowledged = TRUE;
+        g_is_char_received = TRUE;
 }
 
-static void	send_bit(int server_pid, int bit)
+static void	send_character(int server_pid, char c, int delay)
 {
-	int	tries;
+	int	bits;
 
-	tries = 0;
-	while (tries++ < 500)
+	bits = 7;
+	while (bits >= 0)
 	{
-		if (bit == '1')
+		if ((c >> bits) & 1)
 		{
 			if (kill(server_pid, SIGUSR2) == ERROR)
 				handle_error(TRANSMISSON_ERR);
 		}
-		if (bit == '0')
+		else
 		{
 			if (kill(server_pid, SIGUSR1) == ERROR)
 				handle_error(TRANSMISSON_ERR);
 		}
-		usleep(300);
-		if (g_is_signal_acknowledged)
-		{
-			g_is_signal_acknowledged = FALSE;
-			return ;
-		}
-		usleep(2000);
+		usleep(delay);
+		bits--;
 	}
-	handle_error(TRANSMISSON_ERR);
 }
 
 static void	send_message(int server_pid, char *message)
 {
-	char	c;
-	char	bit;
 	int		i;
-	int		k;
+    int     tries;
+    int     delay;
 
 	i = 0;
-	bit = 0;
+    tries = 0;
+    delay = 40;
 	while (message[i] != '\0')
 	{
-		c = message[i];
-		k = 7;
-		while (k >= 0)
-		{
-			if ((c >> k) & 1)
-				send_bit(server_pid, '1');
-			else
-				send_bit(server_pid, '0');
-			k--;
-		}
-		i++;
+		send_character(server_pid, message[i], delay);
+        usleep(delay);
+        if (g_is_char_received == TRUE)
+        {
+            g_is_char_received = FALSE;
+            i++;
+        }
+        else
+        {
+            tries++;
+            delay += 10;
+            if (tries >= 50)
+                handle_error(TRANSMISSON_ERR);
+        }
 	}
 	ft_putstr_fd(message, STDOUT_FILENO);
 	ft_putstr_fd("  ⸜(ˆᗜ ˆ˵)⸝\n\n\n", STDOUT_FILENO);
@@ -90,18 +87,17 @@ int	main(int argc, char **argv)
 	if (argc != 3)
 		handle_error(ARGS_NOT_PROVIDED_ERR);
 	server_pid = ft_atoi(argv[1]);
+    sigemptyset(&sa.sa_mask);
+    sa.sa_flags = SA_SIGINFO;
+    sa.sa_handler = &handle_signal_acknowledgement;
 	if (!server_pid)
 		handle_error(INCORRECT_PID_ERR);
 	if (sigaction(SIGUSR1, &sa, NULL) == ERROR)
 		handle_error(SIGHANDLER_ERR);
 	if (sigaction(SIGUSR2, &sa, NULL) == ERROR)
 		handle_error(SIGHANDLER_ERR);
-	sa.sa_flags = SA_RESTART;
-	sa.sa_handler = handle_signal_acknowledgement;
-	sigemptyset(&sa.sa_mask);
-	sigaction(SIGUSR1, &sa, NULL);
 	send_message(server_pid, argv[2]);
 	while (1)
-		pause();
-	return (0);
+        pause();
+	return (EXIT_SUCCESS);
 }

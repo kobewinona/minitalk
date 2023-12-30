@@ -27,12 +27,10 @@ static void	send_bit(int server_pid, int signum)
 static void	send_message(int server_pid, char *message)
 {
 	char	c;
-	char	bit;
 	int		i;
 	int		k;
 
 	i = 0;
-	bit = 0;
 	while (message[i] != '\0')
 	{
 		c = message[i];

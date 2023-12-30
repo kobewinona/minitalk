@@ -1,5 +1,3 @@
-.PHONY: all clean fclean re asan
-
 NAME			= minitalk
 SERVER			= server
 CLIENT			= client
@@ -10,7 +8,8 @@ CC			= cc
 CFLAGS		= -Wall -Wextra -Werror
 RM			= rm -rf
 INCLUDES	= ./includes
-LIBFTPRINTF	= -lftprintf
+LIBFTPRINTF	= -lftprintf-arm64
+LIBFT		= -lft-arm64
 
 SRCS_DIR		= ./src
 SRCS_DIR_BONUS	= ./src/bonus
@@ -27,21 +26,23 @@ CLIENT_OBJS			= $(patsubst $(SRCS_DIR)/%.c,$(OBJS_DIR)/%.o,$(CLIENT_SRCS))
 SERVER_OBJS_BONUS	= $(patsubst $(SRCS_DIR_BONUS)/%.c,$(OBJS_DIR)/%.o,$(SERVER_SRCS_BONUS))
 CLIENT_OBJS_BONUS	= $(patsubst $(SRCS_DIR_BONUS)/%.c,$(OBJS_DIR)/%.o,$(CLIENT_SRCS_BONUS))
 
+LIBS				= -L$(LIBS_DIR) $(LIBFT) $(LIBFTPRINTF)
+
+$(NAME): $(SERVER) $(CLIENT)
+
 all: $(NAME)
 
 $(SERVER): $(SERVER_OBJS) $(INCLUDES)/minitalk.h $(INCLUDES)/libftprintf.h $(INCLUDES)/libft.h
-	$(CC) $(CFLAGS) $(SERVER_OBJS) -o $(SERVER) -L$(LIBS_DIR) $(LIBFTPRINTF) -I$(INCLUDES)
+	$(CC) $(CFLAGS) $(SERVER_OBJS) -o $(SERVER) $(LIBS) -I$(INCLUDES)
 
 $(CLIENT): $(CLIENT_OBJS) $(INCLUDES)/minitalk.h $(INCLUDES)/libftprintf.h $(INCLUDES)/libft.h
-	$(CC) $(CFLAGS) $(CLIENT_OBJS) -o $(CLIENT) -L$(LIBS_DIR) $(LIBFTPRINTF) -I$(INCLUDES)
+	$(CC) $(CFLAGS) $(CLIENT_OBJS) -o $(CLIENT) $(LIBS) -I$(INCLUDES)
 	
 $(SERVER_BONUS): $(SERVER_OBJS_BONUS) $(INCLUDES)/minitalk.h $(INCLUDES)/libftprintf.h $(INCLUDES)/libft.h
-	$(CC) $(CFLAGS) $(SERVER_OBJS_BONUS) -o $(SERVER_BONUS) -L$(LIBS_DIR) $(LIBFTPRINTF) -I$(INCLUDES)
+	$(CC) $(CFLAGS) $(SERVER_OBJS_BONUS) -o $(SERVER_BONUS) $(LIBS) -I$(INCLUDES)
 
 $(CLIENT_BONUS): $(CLIENT_OBJS_BONUS) $(INCLUDES)/minitalk.h $(INCLUDES)/libftprintf.h $(INCLUDES)/libft.h
-	$(CC) $(CFLAGS) $(CLIENT_OBJS_BONUS) -o $(CLIENT_BONUS) -L$(LIBS_DIR) $(LIBFTPRINTF) -I$(INCLUDES)
-	
-$(NAME): $(SERVER) $(CLIENT)
+	$(CC) $(CFLAGS) $(CLIENT_OBJS_BONUS) -o $(CLIENT_BONUS) $(LIBS) -I$(INCLUDES)
 
 $(OBJS_DIR)/%.o: $(SRCS_DIR)/%.c | $(OBJS_DIR)
 	$(CC) $(CFLAGS) -I$(INCLUDES) -c $< -o $@
