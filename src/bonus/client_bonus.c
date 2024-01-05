@@ -12,8 +12,6 @@
 
 #include "../../includes/minitalk.h"
 
-// TODO fix header
-
 static int	g_is_char_received;
 
 static void	handle_error(char *error_message)
@@ -25,7 +23,7 @@ static void	handle_error(char *error_message)
 static void	handle_signal_acknowledgement(int signum)
 {
 	if (signum == SIGUSR1)
-        g_is_char_received = TRUE;
+		g_is_char_received = TRUE;
 }
 
 static void	send_character(int server_pid, char c, int delay)
@@ -52,26 +50,26 @@ static void	send_character(int server_pid, char c, int delay)
 
 static void	send_message(int server_pid, char *message)
 {
-    int	tries;
-    int	delay;
+	int	tries;
+	int	delay;
 
-    tries = 0;
-    delay = 40;
+	tries = 0;
+	delay = 40;
 	while (*message != '\0')
 	{
 		send_character(server_pid, *message, delay);
-        usleep(delay);
-        if (g_is_char_received == TRUE)
-        {
-            g_is_char_received = FALSE;
-            message++;
-        }
-        else
-        {
-            delay += 10;
-            if (tries++ >= 50)
-                handle_error(TRANSMISSON_ERR);
-        }
+		usleep(delay);
+		if (g_is_char_received == TRUE)
+		{
+			g_is_char_received = FALSE;
+			message++;
+		}
+		else
+		{
+			delay += 10;
+			if (tries++ >= 50)
+				handle_error(TRANSMISSON_ERR);
+		}
 	}
 	ft_putstr_fd(message, STDOUT_FILENO);
 	ft_putstr_fd("  ⸜(ˆᗜ ˆ˵)⸝\n\n\n", STDOUT_FILENO);
@@ -86,9 +84,9 @@ int	main(int argc, char **argv)
 	if (argc != 3)
 		handle_error(ARGS_NOT_PROVIDED_ERR);
 	server_pid = ft_atoi(argv[1]);
-    sigemptyset(&sa.sa_mask);
-    sa.sa_flags = SA_SIGINFO;
-    sa.sa_handler = &handle_signal_acknowledgement;
+	sigemptyset(&sa.sa_mask);
+	sa.sa_flags = SA_SIGINFO;
+	sa.sa_handler = &handle_signal_acknowledgement;
 	if (!server_pid)
 		handle_error(INCORRECT_PID_ERR);
 	if (sigaction(SIGUSR1, &sa, NULL) == ERROR)
@@ -97,6 +95,6 @@ int	main(int argc, char **argv)
 		handle_error(SIGHANDLER_ERR);
 	send_message(server_pid, argv[2]);
 	while (1)
-        pause();
+		pause();
 	return (EXIT_SUCCESS);
 }

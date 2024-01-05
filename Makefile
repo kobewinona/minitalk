@@ -1,3 +1,4 @@
+MACHINE			:= $(shell uname -m)
 NAME			= minitalk
 SERVER			= server
 CLIENT			= client
@@ -8,8 +9,7 @@ CC			= cc
 CFLAGS		= -Wall -Wextra -Werror
 RM			= rm -rf
 INCLUDES	= ./includes
-LIBFTPRINTF	= -lftprintf-arm64
-LIBFT		= -lft-arm64
+LIBFT		= -lft-$(MACHINE)
 
 SRCS_DIR		= ./src
 SRCS_DIR_BONUS	= ./src/bonus
@@ -32,16 +32,16 @@ $(NAME): $(SERVER) $(CLIENT)
 
 all: $(NAME)
 
-$(SERVER): $(SERVER_OBJS) $(INCLUDES)/minitalk.h $(INCLUDES)/libftprintf.h $(INCLUDES)/libft.h
+$(SERVER): $(SERVER_OBJS) $(INCLUDES)/minitalk.h $(INCLUDES)/libft.h
 	$(CC) $(CFLAGS) $(SERVER_OBJS) -o $(SERVER) $(LIBS) -I$(INCLUDES)
 
-$(CLIENT): $(CLIENT_OBJS) $(INCLUDES)/minitalk.h $(INCLUDES)/libftprintf.h $(INCLUDES)/libft.h
+$(CLIENT): $(CLIENT_OBJS) $(INCLUDES)/minitalk.h $(INCLUDES)/libft.h
 	$(CC) $(CFLAGS) $(CLIENT_OBJS) -o $(CLIENT) $(LIBS) -I$(INCLUDES)
 	
-$(SERVER_BONUS): $(SERVER_OBJS_BONUS) $(INCLUDES)/minitalk.h $(INCLUDES)/libftprintf.h $(INCLUDES)/libft.h
+$(SERVER_BONUS): $(SERVER_OBJS_BONUS) $(INCLUDES)/minitalk.h $(INCLUDES)/libft.h
 	$(CC) $(CFLAGS) $(SERVER_OBJS_BONUS) -o $(SERVER_BONUS) $(LIBS) -I$(INCLUDES)
 
-$(CLIENT_BONUS): $(CLIENT_OBJS_BONUS) $(INCLUDES)/minitalk.h $(INCLUDES)/libftprintf.h $(INCLUDES)/libft.h
+$(CLIENT_BONUS): $(CLIENT_OBJS_BONUS) $(INCLUDES)/minitalk.h $(INCLUDES)/libft.h
 	$(CC) $(CFLAGS) $(CLIENT_OBJS_BONUS) -o $(CLIENT_BONUS) $(LIBS) -I$(INCLUDES)
 
 $(OBJS_DIR)/%.o: $(SRCS_DIR)/%.c | $(OBJS_DIR)

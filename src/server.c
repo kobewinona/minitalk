@@ -44,7 +44,9 @@ int	main(void)
 	sa.sa_flags = SA_RESTART;
 	sa.sa_handler = handle_signal_message;
 	sigemptyset(&sa.sa_mask);
-	ft_printf("Server PID: %d | ( ᵔ ᵕ ᵔ) ", server_pid);
+	ft_putstr_fd("Server PID: ", STDOUT_FILENO);
+	ft_putnbr_fd(server_pid, STDOUT_FILENO);
+	ft_putstr_fd(" | ( ᵔ ᵕ ᵔ) ", STDOUT_FILENO);
 	if (sigaction(SIGUSR1, &sa, NULL) == ERROR)
 		handle_error(SIGHANDLER_ERR);
 	if (sigaction(SIGUSR2, &sa, NULL) == ERROR)

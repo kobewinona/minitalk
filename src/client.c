@@ -41,7 +41,7 @@ static void	send_message(int server_pid, char *message)
 				send_bit(server_pid, SIGUSR2);
 			else
 				send_bit(server_pid, SIGUSR1);
-			usleep(500);
+			usleep(400);
 			k--;
 		}
 		i++;

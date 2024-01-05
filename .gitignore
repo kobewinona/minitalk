@@ -1,7 +1,7 @@
 # IDE
 .vscode
 .idea
-so_long.dSYM
+*.dSYM
 
 # program
 a.out
